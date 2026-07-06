@@ -1,4 +1,4 @@
-# write — gera conteúdo na voz calibrada
+# write — gera post de blog na voz calibrada
 
 Compõe a **captura** (descritiva) com o **perfil** ativo (prescritivo) e produz um draft que a
 pessoa reconheça como dela. Depois mede o draft contra a régua e colhe as edições como sinal.
@@ -12,7 +12,7 @@ Compor voz × perfil → Entender a tarefa → Escrever → Linter de features �
 ## 1. Compor voz × perfil
 
 - Carregue o `voice.md` da voz (`<slug>`, default `me`) e o perfil do projeto
-  (`.write-as-me/profiles/<slug>.md`). Se faltar captura → `learn`. Se faltar perfil → ou rode
+  (`.write-blog-posts-as-me/profiles/<slug>.md`). Se faltar captura → `learn`. Se faltar perfil → ou rode
   `calibrate`, ou siga só com a captura e avise que não há intenção/contrato de projeto.
 - A captura dá o **DNA** (ritmo, pontuação, aberturas, hábitos estruturais). O perfil dá a
   **modulação** (o que preservar/dosar, mudança intencional), o público, os nuncas e o **contrato
@@ -36,7 +36,7 @@ para isso, use-o em vez de adivinhar.
 ## 4. Linter de features (guard-rail objetivo)
 
 ```bash
-python3 scripts/lint_text.py <draft> --features ~/.write-as-me/voices/<slug>/features.json
+python3 scripts/lint_text.py <draft> --features ~/.write-blog-posts-as-me/voices/<slug>/features.json
 ```
 
 Compara as métricas do draft com a régua do autor (comprimento de frase/parágrafo, em-dash,

@@ -1,23 +1,23 @@
 ---
-name: write-as-me
+name: write-blog-posts-as-me
 description: >-
   Aprende a voz de escrita de um autor a partir do material dele (corpus de exemplos + entrevista)
-  e gera conteúdo técnico que soa como a própria pessoa escreveu, não como um LLM genérico.
+  e gera posts de blog que soam como a própria pessoa escreveu, não como um LLM genérico.
   Genérica e portátil — serve qualquer autor, em qualquer projeto; nada de catálogo ou formato é
   assado no núcleo. Multi-comando: learn (captura descritiva da voz a partir de exemplos),
   calibrate (intenção editorial e contrato de saída por projeto), write (gera na voz calibrada),
   eval (mede a fidelidade da captura). Use sempre que alguém quiser "aprender meu jeito de
   escrever", "escrever isto como eu", "na minha voz", "soar como eu/como o autor", calibrar ou
-  destilar o próprio estilo, capturar tonalidade/storytelling/nuance de escrita, ou gerar
-  artigo/post/texto que pareça escrito pela própria pessoa — mesmo sem dizer "write-as-me", "voz"
+  destilar o próprio estilo, capturar tonalidade/storytelling/nuance de escrita, ou gerar um post
+  de blog que pareça escrito pela própria pessoa — mesmo sem dizer "write-blog-posts-as-me", "voz"
   ou o nome do comando. O destino e o formato do output vêm do perfil do projeto, não da skill.
   Não use para editar UI, código de aplicação ou documentação de arquitetura.
 ---
 
-# write-as-me — aprende e escreve na voz de um autor
+# write-blog-posts-as-me — aprende e escreve posts de blog na voz de um autor
 
-Transforma o material de escrita de alguém numa **voz capturada** e depois gera conteúdo técnico
-que a pessoa reconheça como dela. É um **handler multi-comando** (inspirado no `impeccable`): o
+Transforma o material de escrita de alguém numa **voz capturada** e depois gera posts de blog que
+a pessoa reconheça como dela. É um **handler multi-comando** (inspirado no `impeccable`): o
 `SKILL.md` roteia; cada comando tem seu playbook em `commands/<comando>.md`, carregado sob demanda.
 
 É **genérica e portátil** de propósito: serve qualquer autor em qualquer contexto. A skill não
@@ -41,10 +41,10 @@ declarada do autor no `calibrate`.
 
 ## Os dois artefatos (e onde vivem)
 
-- **Captura** — `~/.write-as-me/voices/<slug>/` (global, privada). `features.json` (objetivo,
+- **Captura** — `~/.write-blog-posts-as-me/voices/<slug>/` (global, privada). `features.json` (objetivo,
   gerado por script) + `voice.md` (interpretado, ancorado) + `exemplars/` + `corpus-manifest.md`.
   Schema em [references/capture-schema.md](references/capture-schema.md).
-- **Perfil** — `<projeto>/.write-as-me/profiles/<slug>.md` (local, commitado). Transformação
+- **Perfil** — `<projeto>/.write-blog-posts-as-me/profiles/<slug>.md` (local, commitado). Transformação
   editorial + contrato de saída. Schema em [references/profile-schema.md](references/profile-schema.md).
 
 `<slug>` default = `me`. O sujeito-padrão é *você*; escrever como outra pessoa (ghostwriting) é
@@ -81,7 +81,7 @@ sem instalação — rodam com `python3`.
 ## Regras de roteamento
 
 1. **Sem argumento** ("o que dá pra fazer?"): NÃO rode comando automaticamente. Veja o que já
-   existe (há captura em `~/.write-as-me/voices/`? perfil no projeto?) e ofereça o próximo passo
+   existe (há captura em `~/.write-blog-posts-as-me/voices/`? perfil no projeto?) e ofereça o próximo passo
    de maior valor com o comando exato — sem captura → `learn`; captura mas sem perfil → `calibrate`;
    ambos prontos → `write` — seguido da tabela.
 2. **Primeira palavra casa um comando** (`learn`, `calibrate`, `write`, `eval`): carregue

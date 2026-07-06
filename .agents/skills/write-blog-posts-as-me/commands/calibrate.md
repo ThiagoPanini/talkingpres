@@ -1,7 +1,7 @@
 # calibrate — intenção editorial do projeto (camada local)
 
 Constrói ou atualiza o **perfil** de uma voz num projeto: como a pessoa quer *soar aqui*. Saída
-em `<raiz-do-projeto>/.write-as-me/profiles/<slug>.md`, commitada (ver
+em `<raiz-do-projeto>/.write-blog-posts-as-me/profiles/<slug>.md`, commitada (ver
 [profile-schema.md](../references/profile-schema.md)).
 
 ```
@@ -47,7 +47,7 @@ vez de duplicar. É assim que a skill serve qualquer projeto sem assar viés de 
 
 ## 4. Gravar o perfil
 
-Escreva `.write-as-me/profiles/<slug>.md` na estrutura do
+Escreva `.write-blog-posts-as-me/profiles/<slug>.md` na estrutura do
 [profile-schema.md](../references/profile-schema.md). Feche resumindo: o que será preservado, o
 que será modulado, qual a mudança intencional e por quê, e o contrato de saída. Como é commitado,
 fica revisável em PR — voz e intenção são decisões versionadas do projeto.
