@@ -1,15 +1,15 @@
 # profile — me @ ethitorial
 
 > Camada **prescritiva** (como quero soar *aqui*). Refere a captura descritiva em
-> `~/.write-as-me/voices/me/` (global, privada). Esta camada só **MODULA** a captura, nunca a
+> `~/.write-blog-posts-as-me/voices/me/` (global, privada). Esta camada só **MODULA** a captura, nunca a
 > reescreve.
 > Calibrada 2026-06-22 por Thiago Panini. Recalibrada 2026-06-25: a tonalidade dos Posts passa a ser
 > puramente explicativa, sem aterrar a lição em projeto pessoal do autor (ver Nuncas duros). Mudou a
-> intenção? Recalibre com `write-as-me calibrate`.
+> intenção? Recalibre com `write-blog-posts-as-me calibrate`.
 
 ## Voz de base
 
-Refere: **me**. Preserve o DNA descrito em `~/.write-as-me/voices/me/voice.md` (régua objetiva em
+Refere: **me**. Preserve o DNA descrito em `~/.write-blog-posts-as-me/voices/me/voice.md` (régua objetiva em
 `features.json`, registro-alvo 2026). Em uma linha: engenheiro-ensaísta técnico que pensa em voz
 alta, em PT-BR, frase curta e declarativa, parágrafo de três frases que desenvolve uma ideia,
 primeira pessoa honesta, tese antes do mecanismo, jargão em itálico, e sempre credita a fonte.
@@ -177,7 +177,7 @@ O slug do Source é o nome do diretório (kebab-case). Verdade no Zod `sourceFil
 
 - **Catálogo:** `cd apps/web && pnpm vitest run lib/catalog` (schema + tag gate + estrutura).
   Verde = encaixou; vermelho = leia o erro do Zod/loader e corrija antes de entregar.
-- **Voz:** `python3 .claude/skills/write-as-me/scripts/lint_text.py --features ~/.write-as-me/voices/me/features.json <draft.mdx>`.
+- **Voz:** `python3 .claude/skills/write-blog-posts-as-me/scripts/lint_text.py --features ~/.write-blog-posts-as-me/voices/me/features.json <draft.mdx>`.
 
 ### Fronteira
 

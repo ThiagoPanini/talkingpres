@@ -12,7 +12,7 @@ contamina todo uso. Mantenha o seam limpo.
 ## Onde vive
 
 ```
-<raiz-do-projeto>/.write-as-me/profiles/<slug>.md     # commitado
+<raiz-do-projeto>/.write-blog-posts-as-me/profiles/<slug>.md     # commitado
 ```
 
 Commitado de propósito: o perfil é decisão de projeto, revisável em PR, e **não expõe o corpus**
@@ -22,7 +22,7 @@ Commitado de propósito: o perfil é decisão de projeto, revisável em PR, e **
 
 ```markdown
 # profile — <slug> @ <projeto>
-> Camada prescritiva. Refere a captura ~/.write-as-me/voices/<slug>/.
+> Camada prescritiva. Refere a captura ~/.write-blog-posts-as-me/voices/<slug>/.
 > Calibrada <data> por <autor>. Mudou a intenção? Recalibre com `calibrate`.
 
 ## Voz de base

@@ -41,4 +41,4 @@ O **estado vive nas issues do GitHub** — vertical slices geradas por `to-issue
 
 ## Skills
 
-Skills vivem em `.agents/skills/` (symlinkadas em `.claude/skills/`); use `find-skills` para descobrir o conjunto atual. Centrais ao fluxo: `grill-me`/`grill-with-docs` (alinhamento), `to-issues`/`to-prd` (fatiar trabalho em vertical-slices), `tdd` (implementação), `frontend-design` (UI) e `write-as-me` (autoria de conteúdo do catálogo).
+Skills vivem em `.agents/skills/` (symlinkadas em `.claude/skills/`); use `find-skills` para descobrir o conjunto atual. Centrais ao fluxo: `grill-me`/`grill-with-docs` (alinhamento), `to-issues`/`to-prd` (fatiar trabalho em vertical-slices), `tdd` (implementação), `frontend-design` (UI) e `write-blog-posts-as-me` (autoria de conteúdo do catálogo).

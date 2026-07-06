@@ -1,7 +1,7 @@
 # learn — captura descritiva da voz (camada global)
 
 Constrói ou atualiza a **captura** de uma voz: como a pessoa *de fato* escreve. Saída em
-`~/.write-as-me/voices/<slug>/` (ver [capture-schema.md](../references/capture-schema.md)). É
+`~/.write-blog-posts-as-me/voices/<slug>/` (ver [capture-schema.md](../references/capture-schema.md)). É
 **idempotente** — rodar de novo num corpus maior reincorpora; não há verbo separado de
 "recalibrar a captura".
 
@@ -26,7 +26,7 @@ fidelidade: tutorial, post solto, nota, texto opinativo.
 ## 2. Segmentar e medir (o script faz o trabalho objetivo)
 
 ```bash
-python3 scripts/analyze_corpus.py <caminho> [<caminho> ...] --out ~/.write-as-me/voices/<slug>/features.json
+python3 scripts/analyze_corpus.py <caminho> [<caminho> ...] --out ~/.write-blog-posts-as-me/voices/<slug>/features.json
 ```
 
 O script segmenta cada doc por elemento (prosa / código / citação / referências / tabela) e

@@ -103,7 +103,7 @@ def analyze(paths: list[str]) -> dict:
 
     return {
         "meta": {
-            "tool": "write-as-me/analyze_corpus",
+            "tool": "write-blog-posts-as-me/analyze_corpus",
             "schema": 1,
             "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "documents": n,

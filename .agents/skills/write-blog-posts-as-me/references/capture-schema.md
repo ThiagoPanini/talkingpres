@@ -7,7 +7,7 @@ sua *intenção editorial* por cima (ver [profile-schema.md](profile-schema.md))
 ## Onde vive
 
 ```
-~/.write-as-me/voices/<slug>/
+~/.write-blog-posts-as-me/voices/<slug>/
 ├── features.json        # camada objetiva — saída de scripts/analyze_corpus.py
 ├── voice.md             # camada interpretada — afirmações ancoradas, com proveniência
 ├── exemplars/           # amostras reais retidas (ancoragem do juiz + base do eval)

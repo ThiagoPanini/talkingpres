@@ -1,4 +1,4 @@
-"""Shared stylometric feature library for write-as-me.
+"""Shared stylometric feature library for write-blog-posts-as-me.
 
 Pure stdlib, language-agnostic. Computes objective signal over an author's
 *prose* — segmented away from code, quotes, references and tables — plus the
