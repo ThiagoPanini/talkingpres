@@ -18,6 +18,13 @@ services:
       context: ./apps/api
     ports:
       - "8000:8000"
+    environment:
+      # Sem esta linha o container sobe com a url de exemplo do alembic.ini
+      # (`@localhost`), que dentro do container é o próprio container: o
+      # `alembic upgrade head` do CMD não acha banco nenhum e o serviço morre
+      # antes de servir. O host é o nome do serviço, e as credenciais são as
+      # declaradas em `postgres` logo abaixo.
+      DATABASE_URL: postgresql+asyncpg://ethitorial:ethitorial@postgres:5432/ethitorial
     depends_on:
       postgres:
         condition: service_healthy

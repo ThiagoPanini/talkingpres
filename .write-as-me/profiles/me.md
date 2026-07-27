@@ -177,7 +177,9 @@ O slug do Source é o nome do diretório (kebab-case). Verdade no Zod `sourceFil
 
 - **Catálogo:** `cd apps/web && pnpm vitest run lib/catalog` (schema + tag gate + estrutura).
   Verde = encaixou; vermelho = leia o erro do Zod/loader e corrija antes de entregar.
-- **Voz:** `python3 .claude/skills/write-as-me/scripts/lint_text.py --features ~/.write-as-me/voices/me/features.json <draft.mdx>`.
+- **Voz:** `python3 ~/.claude/skills/write-as-me/scripts/lint_text.py --features ~/.write-as-me/voices/me/features.json <draft.mdx>`.
+  A skill saiu deste repo: equipamento de agente é **global**, e a cópia global é a única (ver [docs/agents/workflow.md](../../docs/agents/workflow.md)). Este perfil, que é a camada prescritiva **do projeto**, fica.
+  > **Pendente:** a `write-as-me` é autoral e ainda não tem par global. A promoção passa por [`panlabs-tech/skills`](https://github.com/panlabs-tech/skills), que é a fonte de distribuição; até ela acontecer, o caminho acima não resolve. O conteúdo da skill está no histórico deste repo e no PR [#155](https://github.com/panlabs-tech/ethitorial/pull/155).
 
 ### Fronteira
 
