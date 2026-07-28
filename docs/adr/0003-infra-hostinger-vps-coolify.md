@@ -41,7 +41,7 @@ Precisamos decidir onde e como hospedar `apps/web`, `apps/api`, banco e assets. 
 A VPS é **infraestrutura compartilhada, não um projeto**. Três camadas de nomeação convivem:
 
 - **Umbrella público — `panlabs.tech`.** A vitrine pública do portfólio. Cada projeto é um subdomínio próprio; o `ethitorial` é `ethitorial.panlabs.tech`, com zona DNS própria na conta Cloudflare.
-- **Infra do operador.** Painel Coolify em `vps.panlabs.tech`; namespace neutro `panini-vps` (hostname, chave SSH, prefixo de segredos de infra, bucket de backups, tokens de infra); imagens em `ghcr.io/thiagopanini/`. É encanamento — desacoplado de qualquer projeto e fora da marca. O sufixo `-prod` é dispensado: com uma única máquina, ambiente não é eixo de nomeação.
+- **Infra do operador.** Painel Coolify em `vps.panlabs.tech`; namespace neutro `panini-vps` (hostname, chave SSH, prefixo de segredos de infra, bucket de backups, tokens de infra); imagens em `ghcr.io/<dono-do-repositório>/` (ver emenda no fim). É encanamento — desacoplado de qualquer projeto e fora da marca. O sufixo `-prod` é dispensado: com uma única máquina, ambiente não é eixo de nomeação.
 - **Isolamento por projeto.** Uma única instância de Coolify hospeda **N projetos**, isolados em três eixos: um *Coolify Project* por projeto; uma zona DNS própria por projeto (todas apontando para o IP da VPS, `Full (Strict)`, origem fechada aos ranges Cloudflare); *databases* Postgres separadas no mesmo servidor. Backups num bucket R2 único com prefixo por projeto (`<projeto>/postgres/...`). Segredos de infra moram em `panini-vps/`; segredos de aplicação usam prefixo próprio (`<projeto>/`).
 
 **Blast radius é compartilhado** — um projeto que derrube a VPS derruba os vizinhos (panlabs et al.). Isso é **aceito deliberadamente porque o portfólio é experimental, solo e de baixo risco**: sem usuários ativos relevantes, downtime é quase irrelevante e a autonomia operacional vale mais que o isolamento (ver [ADR-0010](0010-desenvolvimento-autonomo-afk.md)). Isolamento forte — multi-tenant, ou VPS/ambiente dedicado por projeto — é o **gatilho de revisão** para quando um projeto ganhar usuários reais ou SLA.
@@ -125,3 +125,9 @@ Se você consumir **mais de 2h/mês mantendo Coolify** (atualizações que quebr
 ## Histórico
 
 - **2026-05-24:** corrigido o reverse proxy embutido de Caddy → Traefik. A doc oficial Coolify ([proxy/caddy/overview](https://coolify.io/docs/knowledge-base/proxy/caddy/overview), [server/proxies](https://coolify.io/docs/knowledge-base/server/proxies)) confirma que Traefik é o default e Caddy é experimental, com recomendação explícita de manter Traefik para a maioria dos setups. A decisão original (delegar TLS + roteamento ao Coolify) permanece válida; só o nome do proxy embutido mudou.
+
+## Emenda, 2026-07-28: o namespace deixou de ser pessoal
+
+Este ADR cravava `ghcr.io/thiagopanini/`, o que era verdade quando foi escrito. A migração para a organização `panlabs-tech`, em 2026-07-18, invalidou o namespace **sem que nada acusasse**: o `deploy.yml` continuou apontando para lá, e a partir do dia seguinte todo build terminou em `denied: permission_denied: The requested installation does not exist`.
+
+O namespace passa a ser `${{ github.repository_owner }}`, derivado do dono do repositório em vez de literal. A decisão de infra não mudou; o que mudou foi parar de cravar um nome que a plataforma já sabe.
