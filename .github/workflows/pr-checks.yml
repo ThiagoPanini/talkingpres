@@ -1,21 +1,29 @@
 name: pr-checks
 
-# Portão 2 (ADR-0005) — o GATE REAL antes do merge na main.
+# Portão 2 (ADR-0005): o GATE REAL antes do merge na main.
 #
 # Dispara no PUSH das branches de trabalho (ADR-0005 nomeia o portão "On PR /
 # push to feature branch"; emenda 2026-06-07). Com o ruleset strict/up-to-date,
-# os contextos web/api/security reportados no SHA satisfazem o PR — inclusive um
-# PR aberto automaticamente, que NÃO dispararia `pull_request` por causa da
-# proteção anti-recursão do GITHUB_TOKEN. Por isso a validação vive no push.
-# PR vindo de fork fica deferido como trip-wire (adicionar `pull_request`
-# guardado quando surgir contribuidor externo).
+# os contextos reportados no SHA satisfazem o PR, inclusive um PR aberto
+# automaticamente, que NÃO dispararia `pull_request` por causa da proteção
+# anti-recursão do GITHUB_TOKEN. Por isso a validação vive no push. PR vindo de
+# fork fica deferido como trip-wire.
 #
-# Ao final dos checks (verdes), o job `open-pr` abre um PR para a main se ainda
-# não existir um (ADR-0010: abrir PR e mergear no verde são autônomos).
+# As pernas por superfície e o scan de segredos são REFERENCIADOS da CI
+# compartilhada da org (panlabs-tech/.github), não copiados: os quatro arquivos
+# de CI da frota nasceram copiados um do outro e divergiram entre 48% e 86% em
+# sete semanas, então origem comum não impede deriva.
 #
-# Enxuto por enquanto: lint + typecheck + test + secret scan. Preview-deploy,
-# e2e, coverage gate e bandit/npm-audit entram quando houver código que os
-# justifique.
+# A referência é por tag semver EXATA, nunca flutuante (`@v1` reintroduziria a
+# quebra simultânea de todos os consumidores que a tag existe para evitar).
+# Subir de tag é ato deliberado, num PR revisável.
+#
+# `checks` e `security` são os dois nomes de status do contrato da org inteira
+# (panlabs-tech/.github, scripts/panlabs/ci/rollup.py). O rollup `checks` existe
+# para que o conjunto de nomes publicados não varie com a superfície: `needs`
+# muda repo a repo, o nome publicado não. `open-pr` aparece como check
+# informativo no mesmo commit, mas não é required; seria circular, porque é o
+# job que cria o PR.
 
 on:
   push:
@@ -26,6 +34,15 @@ on:
       - "docs/**"
       - "refactor/**"
       - "test/**"
+      - "ci/**"
+      # Branch gerada por worktree de agente, nas duas grafias que as
+      # ferramentas usam (com barra e com hífen).
+      - "worktree/**"
+      - "worktree-**"
+      # A raiz de branch do Dependabot, que não é configurável. Sem esta linha o
+      # PR do bot não dispara checagem nenhuma e os required checks nunca saem:
+      # o PR fica pendurado esperando para sempre um status que ninguém publica.
+      - "dependabot/**"
 
 permissions:
   contents: read
@@ -35,100 +52,90 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  web:
-    name: web
+  # Perna da superfície Python: apps/api. Os argumentos são os mesmos do portão
+  # local (lefthook.yml), para que "passou aqui" e "passou lá" signifiquem o
+  # mesmo: integração fica fora do gate, pyright roda com --warnings.
+  checks-python:
+    name: checks-python
+    uses: panlabs-tech/.github/.github/workflows/checks-python.yml@v1.0.0
+    with:
+      working-directory: apps/api
+      pytest-args: -m "not integration" -q
+      pyright-args: --warnings
+
+  # Perna da superfície Node: a raiz do workspace pnpm, e não `apps/web`. É na
+  # raiz que moram o `.node-version` e o `pnpm-lock.yaml` que o workflow
+  # compartilhado lê, e os scripts `lint`/`typecheck`/`test` do package.json da
+  # raiz delegam para o filtro do workspace.
+  checks-node:
+    name: checks-node
+    uses: panlabs-tech/.github/.github/workflows/checks-node.yml@v1.0.0
+    with:
+      package-manager: pnpm
+
+  # O rollup: id fixo, `needs` sobre as pernas por superfície deste repo.
+  # `if: always()` mais checagem explícita de `needs.*.result`, porque sem os
+  # dois uma perna vermelha faz o rollup ser PULADO em vez de REPROVADO, e
+  # pulado não satisfaz um required check do jeito que reprovado faz, mas também
+  # não bloqueia. É o mesmo cálculo que panlabs.ci.rollup.rollup_conclusion faz
+  # em Python, testado lá.
+  checks:
+    name: checks
+    needs: [checks-python, checks-node]
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .node-version
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: lint (biome)
-        run: pnpm exec biome check apps/web
-      - name: typecheck (tsc)
-        run: pnpm --filter @ethitorial/web typecheck
+      - name: agregar o resultado das pernas por superfície
+        run: |
+          set -euo pipefail
+          for leg in \
+            "checks-python=${{ needs.checks-python.result }}" \
+            "checks-node=${{ needs.checks-node.result }}"
+          do
+            name="${leg%%=*}"
+            result="${leg#*=}"
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              echo "::error::${name} reprovou (${result})."
+              exit 1
+            fi
+          done
 
-  api:
-    name: api
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
-    steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-      - run: uv sync --frozen
-      - name: format (ruff)
-        run: uv run ruff format --check .
-      - name: lint (ruff)
-        run: uv run ruff check .
-      - name: typecheck (pyright)
-        run: uv run pyright --warnings
-      - name: test (pytest)
-        run: uv run pytest -m "not integration" -q
+  security-scan:
+    name: security-scan
+    uses: panlabs-tech/.github/.github/workflows/security.yml@v1.0.0
 
+  # Fachada em volta de security-scan, não um rollup de superfícies (só existe
+  # um scan de segredos possível por repo). Existe porque um job que chama um
+  # reusable workflow via `uses:` publica o check como "<job do caller> / <job
+  # do workflow chamado>", nunca só com o nome do job do caller: comportamento
+  # do GitHub Actions, sem opção para suprimir. Sem esta fachada o required
+  # check `security` nunca existiria com esse nome exato.
   security:
     name: security
+    needs: [security-scan]
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: agregar o resultado do scan
+        run: |
+          set -euo pipefail
+          result="${{ needs.security-scan.result }}"
+          if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+            echo "::error::security-scan reprovou (${result})."
+            exit 1
+          fi
 
   # Ao final dos checks verdes: abre PR para a main se ainda não existir um.
-  # Idempotente — push subsequente reusa o PR existente (no-op). O agente mergeia no verde (ADR-0005 emenda).
+  # Idempotente. O agente mergeia no verde (ADR-0005 emenda / ADR-0010).
+  #
+  # O Dependabot já abre o próprio PR: rodar `open-pr` na branch dele seria, no
+  # melhor caso, ruído, e no pior, corrida com quem abriu primeiro. A condição
+  # não afrouxa o gate porque `open-pr` nunca foi required.
   open-pr:
     name: open-pr
-    needs: [web, api, security]
-    runs-on: ubuntu-latest
+    needs: [checks, security]
+    if: github.actor != 'dependabot[bot]'
+    uses: panlabs-tech/.github/.github/workflows/open-pr.yml@v1.0.0
     permissions:
       contents: read
       pull-requests: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Abrir PR para a main se ainda não existir
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-
-          # Já existe PR aberto desta branch para a main?
-          if [ "$(gh pr list --head "$BRANCH" --base main --state open --json number --jq 'length')" -ne 0 ]; then
-            echo "::notice::Já existe PR aberto de $BRANCH para a main — nada a fazer."
-            exit 0
-          fi
-
-          # Há commits novos sobre a main? (evita 'No commits between ...')
-          # Compara com FETCH_HEAD: 'git fetch origin main' sempre o grava,
-          # mesmo quando o checkout não mantém o ref origin/main.
-          git fetch --quiet origin main
-          if [ "$(git rev-list --count FETCH_HEAD..HEAD)" -eq 0 ]; then
-            echo "::notice::$BRANCH não tem commits novos sobre a main — PR não aberto."
-            exit 0
-          fi
-
-          # Título = subject do commit mais recente da branch que NÃO seja um
-          # 'chore(roadmap):' (auto-commit de hook de roadmap (histórico), que costuma ser
-          # o tip e faria um título ruim). Já em Conventional Commits; vira a
-          # mensagem do squash-merge na main. Fallback: último commit.
-          title="$(git log "FETCH_HEAD..HEAD" --pretty=%s | grep -v '^chore(roadmap):' | head -n1 || true)"
-          [ -z "$title" ] && title="$(git log -1 --pretty=%s)"
-
-          gh pr create \
-            --base main \
-            --head "$BRANCH" \
-            --title "$title" \
-            --body "🤖 PR aberto automaticamente quando os checks do push ficaram verdes (pr-checks → open-pr). A validação do Portão 2 (ADR-0005) já rodou neste push. **Merge autônomo no verde** (ADR-0005 emenda / ADR-0010): o agente pode aplicar squash-merge com os checks verdes; o operador pode revisar antes se quiser. Preencha resumo, riscos e screenshots (se houver UI)."
-
-          echo "::notice::PR aberto: $BRANCH → main — $title"

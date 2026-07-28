@@ -41,4 +41,10 @@ O **estado vive nas issues do GitHub** — vertical slices geradas por `to-issue
 
 ## Skills
 
-Skills vivem em `.agents/skills/` (symlinkadas em `.claude/skills/`); use `find-skills` para descobrir o conjunto atual. Centrais ao fluxo: `grill-me`/`grill-with-docs` (alinhamento), `to-issues`/`to-prd` (fatiar trabalho em vertical-slices), `tdd` (implementação), `frontend-design` (UI) e `write-as-me` (autoria de conteúdo do catálogo).
+**Skills vivem em um lugar só: o global da máquina.** Este repo não versiona nenhuma, e a cláusula operante é zero redundância: uma cópia dentro do repo colidiria por nome com a global e as duas derivariam em silêncio. O mecanismo de instalação é a CLI de distribuição, global ou por projeto; skill autoral da org mora em [`panlabs-tech/skills`](https://github.com/panlabs-tech/skills), que é a fonte de distribuição. Padrão descrito em [`panlabs-tech/.github`, `docs/maquina.md`](https://github.com/panlabs-tech/.github/blob/main/docs/maquina.md).
+
+Centrais ao fluxo, todas globais: `grill-me`/`grill-with-docs` (alinhamento), `to-spec` e `to-tickets` (destilar e fatiar em vertical slices), `tdd` (implementação), `implement` (execução), `code-review` (revisão) e `frontend-design` (UI).
+
+> `to-issues` e `to-prd` eram revisão anterior de `to-tickets` e `to-spec`: foram descartadas, não promovidas. Se um documento antigo deste repo ainda as citar, o nome atual é o da direita.
+
+O mesmo vale para subagentes, comandos, hooks portáveis, lista de permissões e barra de status: equipamento de máquina, nunca versionado aqui. O que este repo versiona é **declaração de adesão** (arquivo marcador), e a lógica do mecanismo fica fora.

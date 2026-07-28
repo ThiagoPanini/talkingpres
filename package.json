@@ -11,6 +11,8 @@
     "build:web": "pnpm --filter @ethitorial/web build",
     "typecheck:web": "pnpm --filter @ethitorial/web typecheck",
     "lint": "biome check .",
+    "typecheck": "pnpm --filter @ethitorial/web typecheck",
+    "test": "pnpm --filter @ethitorial/web test",
     "format": "biome format --write ."
   },
   "devDependencies": {

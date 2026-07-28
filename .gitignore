@@ -2,6 +2,7 @@
 **tmp
 **raw
 .claude/design
+.claude/worktrees/
 
 # Local infra/secrets scratch — NUNCA commitar (contém IP de origem da VPS, notas de bootstrap).
 # Caderno do panini-vps vive aqui para edição fácil; o repo é público, então jamais versionar.
@@ -76,10 +77,17 @@ desktop.ini
 # Claude Code — local overrides (personal, not for the repo)
 .claude/settings.local.json
 
-# MCP — configs reais são locais; templates sem segredo ficam versionados.
-.mcp.json
-.codex/config.toml
+# MCP: o `.mcp.json` do Claude Code é VERSIONADO, com placeholder de variável de
+# ambiente no lugar do segredo (anatomia panlabs, item `app-mcp-config-versioned`).
+# O config real gitignorado com o token literal dentro nunca era de fato
+# compartilhado, apesar do nome. O do Copilot continua local por ora.
 .vscode/mcp.json
+
+# Codex: o diretório inteiro fica fora do git. O template versionado saiu (era
+# configuração de ferramenta fora da toolchain decidida, e duplicava exatamente
+# os três servidores do `.mcp.json`); a linha continua aqui porque o config real
+# que alguém gere localmente carrega token literal dentro.
+.codex/
 
 # Coverage and test artifacts
 coverage/

@@ -21,6 +21,10 @@ Hub pessoal open source de aprendizado que centraliza artefatos intelectuais (po
 
 - **Convenções de código e git** → [docs/agents/conventions.md](docs/agents/conventions.md)
 - **Autonomia, fluxo de implementação, issues e skills** → [docs/agents/workflow.md](docs/agents/workflow.md) (resumo de [ADR-0010](docs/adr/0010-desenvolvimento-autonomo-afk.md)) — **ler antes de operar MCPs ou implementar**
+- **Onde as issues vivem, e o que entra** → [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md)
+- **Vocabulário de labels de triagem** → [docs/agents/triage-labels.md](docs/agents/triage-labels.md)
+- **Mapa dos documentos de domínio** → [docs/agents/domain.md](docs/agents/domain.md)
+- **Subir o projeto na máquina** → [docs/agents/local-dev.md](docs/agents/local-dev.md)
 - **Design system para agentes** → [docs/agents/design.md](docs/agents/design.md)
 - **Setup de MCPs locais** → [docs/agents/mcps.md](docs/agents/mcps.md)
 
@@ -53,7 +57,7 @@ Sempre que o operador pedir "um prompt" (para outra sessão, outro repo ou uma t
 ## Regras de ouro (não-negociáveis)
 
 - **Autonomia total no escopo do projeto — para só em 4 casos.** Implementar, deploy, redeploy, env, segredo gerável por máquina, migration, criar/dropar recurso próprio no Coolify e **merge de PR verde** são a norma: faça sozinho. Pare e chame o operador apenas se a operação (1) o **trancaria pra fora** (senha root/painel, firewall, token que o MCP usa), (2) **recriaria a VM**, (3) **exige segredo de terceiro** (OAuth/console), ou (4) **tocaria outro projeto** no Coolify compartilhado. Detalhe em [ADR-0010](docs/adr/0010-desenvolvimento-autonomo-afk.md) e [workflow.md](docs/agents/workflow.md).
-- **Não commitar segredos.** Use `.env.example` / `.mcp.json.example`. CI roda `gitleaks`. O `.mcp.json` real é gitignored.
+- **Não commitar segredos.** Use `.env.example` e, no `.mcp.json` versionado, placeholder de variável de ambiente (`${VAR}`), nunca o valor. CI e portão local rodam `gitleaks`. Detalhe em [docs/agents/mcps.md](docs/agents/mcps.md).
 - **Não usar `--no-verify` / `--force`** nem desabilitar CI para fechar PR. Falha de hook = consertar a causa.
 - **Não acoplar lógica cross-boundary** (`catalog`, `identity`, `engagement`, `narration`, `shared`, `platform`) — interfaces explícitas, nunca imports diretos.
 - **Não introduzir features V2 do boundary `narration`** (voz/TTS + RAG/Q&A) sem ADR — seguem deferidas (CONTEXT.md). O foco visual corrente é preservar e estender o contrato as-built da Direção A.
@@ -63,5 +67,7 @@ Sempre que o operador pedir "um prompt" (para outra sessão, outro repo ou uma t
 ## Para Claude Code
 
 No modo de implementação autônoma, "economia de token" = rodar a skill `caveman` em full mode por padrão (instanciação Claude do princípio; Codex/Copilot usam o equivalente de cada um).
+
+**Skill, subagente, comando, hook, permissão e barra de status são equipamento de máquina**, instalados globalmente e nunca versionados aqui: a cópia global é a única (cláusula de zero redundância). Não vendorize. Ver [docs/agents/workflow.md](docs/agents/workflow.md).
 
 Memórias auto-salvas locais (fora deste repo) contêm apenas perfil do usuário e feedback de colaboração — **nunca** decisões de projeto. Decisões de projeto vivem em `docs/`.
